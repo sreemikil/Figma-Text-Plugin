@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Font Detector</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 10px;
+      }
+      h2 {
+        margin-top: 0;
+      }
+      ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      li {
+        margin-bottom: 8px;
+      }
+      .font-family {
+        font-weight: bold;
+      }
+      button {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Detected Fonts</h2>
+    <ul id="fontsList"></ul>
+    <button id="closeBtn">Close Plugin</button>
+    <script>
+      // Listen for messages sent from the main code
+      onmessage = (event) => {
+        const msg = event.data.pluginMessage;
+        if (msg.type === 'fonts-detected') {
+          const fonts = msg.fonts;
+          const listElement = document.getElementById('fontsList');
+          // For each detected font, display its family and list of styles
+          fonts.forEach(font => {
+            const li = document.createElement('li');
+            li.innerHTML = '<span class="font-family">' + font.family + '</span>: ' + font.styles.join(', ');
+            listElement.appendChild(li);
+          });
+        }
+      };
+
+      // When the close button is clicked, send a message back to close the plugin
+      document.getElementById('closeBtn').onclick = () => {
+        parent.postMessage({ pluginMessage: { type: 'close-plugin' } }, '*');
+      };
+    </script>
+  </body>
+</html>
